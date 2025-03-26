@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,46 +6,43 @@ public class WardrobeUI : MonoBehaviour
 {
     [Header("UI Elements")]
     public GameObject wardrobePanel;
-    private ClothingScrollView clothingScrollView;
-    private AvatarMirroring avatarMirror;
+    public GameObject clothingScrollViewGameObject;
+    public GameObject avatarMirroringGameObject;
 
     void Start()
     {
-        clothingScrollView = FindObjectOfType<ClothingScrollView>();
-        avatarMirror = FindObjectOfType<AvatarMirroring>();
-        // ShowCategory("Hair"); // Default category
     }
 
     public void OpenWardrobe()
     {
         wardrobePanel.SetActive(true);
         ShowCategory("Head"); // Optionally reset to default when opening
-        if (avatarMirror != null)
+        if (avatarMirroringGameObject.TryGetComponent<AvatarMirroring>(out var avatarMirroring))
         {
             Debug.Log("Start mirroring>>>>>>");
-            avatarMirror.SetWardrobeMirror(true);
+            avatarMirroring.SetWardrobeMirror(true);
         }
     }
 
     public void CloseWardrobe()
     {
         wardrobePanel.SetActive(false);
-        if (avatarMirror != null)
+        if (avatarMirroringGameObject.TryGetComponent<AvatarMirroring>(out var avatarMirroring))
         {
             Debug.Log("Close mirroring>>>>>>");
-            avatarMirror.SetWardrobeMirror(false);
+            avatarMirroring.SetWardrobeMirror(false);
         }
     }
 
     public void ShowCategory(string category)
     {
-        if (clothingScrollView != null)
+        if (clothingScrollViewGameObject.TryGetComponent<ClothingScrollView>(out var clothingScrollView))
         {
             clothingScrollView.LoadClothingItems(category);
         }
         else
         {
-            Debug.LogError("ClothingScrollView not found in scene!");
+            Debug.LogError("ClothingScrollView not found");
         }
     }
 

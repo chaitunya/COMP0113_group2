@@ -152,6 +152,7 @@ public class ClothingScrollView : MonoBehaviour
                 }
             }
         }
+        Debug.Log($"Loaded {category} items");
         yield break;
     }
 

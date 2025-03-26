@@ -4691,7 +4691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 315626440}
-  menuPanel: {fileID: 1729658838}
+  wardrobePanel: {fileID: 1729658838}
   positionOffset: {x: 0.15, y: -0.05, z: 1.8}
   rotationOffset: {x: 1, y: -0.1, z: 0.4}
   transitionSpeed: 2
@@ -6240,6 +6240,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wardrobePanel: {fileID: 1729658838}
+  clothingScrollViewGameObject: {fileID: 744957174}
+  avatarMirroringGameObject: {fileID: 1723668041}
 --- !u!114 &1729658841
 MonoBehaviour:
   m_ObjectHideFlags: 0
