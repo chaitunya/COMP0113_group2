@@ -9,29 +9,16 @@ public class WardrobeUI : MonoBehaviour
     public GameObject clothingScrollViewGameObject;
     public GameObject avatarMirroringGameObject;
 
-    void Start()
-    {
-    }
 
     public void OpenWardrobe()
     {
         wardrobePanel.SetActive(true);
         ShowCategory("Head"); // Optionally reset to default when opening
-        if (avatarMirroringGameObject.TryGetComponent<AvatarMirroring>(out var avatarMirroring))
-        {
-            Debug.Log("Start mirroring>>>>>>");
-            avatarMirroring.SetWardrobeMirror(true);
-        }
     }
 
     public void CloseWardrobe()
     {
         wardrobePanel.SetActive(false);
-        if (avatarMirroringGameObject.TryGetComponent<AvatarMirroring>(out var avatarMirroring))
-        {
-            Debug.Log("Close mirroring>>>>>>");
-            avatarMirroring.SetWardrobeMirror(false);
-        }
     }
 
     public void ShowCategory(string category)

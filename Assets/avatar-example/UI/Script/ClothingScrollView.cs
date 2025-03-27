@@ -23,7 +23,6 @@ public class ClothingScrollView : MonoBehaviour
     public GameObject defaultAvatarPrefab;
     private AvatarManager avatarManager;
     private RoomClient roomClient;
-    private GameObject previewAvatarInstance;
 
     [Header("Avatar Textures")]
     public AvatarTextureCatalogue textureCatalogue;
@@ -49,8 +48,6 @@ public class ClothingScrollView : MonoBehaviour
     public Camera torsoCamera;
 
     public GameObject previewPlaceholder;
-
-    private List<Texture2D> catalogueTextures;
 
     void Start()
     {
@@ -142,7 +139,7 @@ public class ClothingScrollView : MonoBehaviour
                 if (itemImage != null && previewModel != null)
                 {
                     // itemImage.sprite = GetBodyPartPreview(texture, targetPart);
-                    yield return GeneratePreviewFromTexture(texture, previewModel, itemImage, camera, layer);
+                    yield return GeneratePreviewFromTexture(texture, previewModel, itemImage, camera, layer, targetPart);
                 }
 
                 // Add button functionality to apply costume
@@ -182,7 +179,9 @@ public class ClothingScrollView : MonoBehaviour
     }
 
 
-    private IEnumerator GeneratePreviewFromTexture(Texture2D texture, GameObject fbxModel, Image targetUI, Camera camera, string layer)
+    private IEnumerator GeneratePreviewFromTexture(Texture2D texture,
+        GameObject fbxModel, Image targetUI, Camera camera, string layer,
+        BodyPart bodyPart)
     {
         // Create a temporary instance of the model for preview
         GameObject modelInstance = Instantiate(fbxModel, previewPlaceholder.transform);
@@ -215,67 +214,9 @@ public class ClothingScrollView : MonoBehaviour
         // Wait a frame for renderers to initialize with the new texture
         yield return null;
         
-        // Calculate bounds of the model
-        Bounds bounds = CalculateRendererBounds(modelInstance);
-        
-        if (bounds.size == Vector3.zero)
-        {
-            // If no renderers found or invalid bounds, use a default size
-            Debug.LogWarning($"No valid bounds found for model, using default.");
-            bounds.size = new Vector3(0.2f, 0.2f, 0.2f);
-            bounds.center = modelInstance.transform.position;
-        }
-
         // Choose the appropriate camera based on the model type
         Camera previewCamera = camera;
         
-        // Calculate distance from camera to placeholder
-        float distanceToCamera = Vector3.Distance(previewCamera.transform.position, previewPlaceholder.transform.position);
-        
-        // Calculate viewport height at this distance using camera FOV
-        float viewportHeight = 2.0f * distanceToCamera * Mathf.Tan(previewCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-        float viewportWidth = viewportHeight; // Equal to height for 1:1 aspect ratio
-        
-        // Get the size of the object (using the largest dimension)
-        float largestDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-        
-        // Calculate scale to fit within viewport with a margin
-        float marginFactor = 0.6f; // Leave 40% margin to avoid clipping
-        float scaleFactor = Mathf.Min(viewportWidth, viewportHeight) * marginFactor / largestDimension;
-        
-        // Apply the calculated scale
-        modelInstance.transform.localScale = Vector3.one * scaleFactor;
-        
-        // Wait a frame for the renderers to update with new scale
-        yield return null;
-        
-        // Get new bounds after scaling
-        bounds = CalculateRendererBounds(modelInstance);
-        
-        // Center the object relative to the placeholder
-        Vector3 offset = bounds.center - previewPlaceholder.transform.position;
-        
-        // Determine safe distance from camera to avoid clipping
-        float cameraForwardDistance = Vector3.Dot(bounds.size, previewCamera.transform.forward) * 0.5f;
-        float safeDistance = previewCamera.nearClipPlane + cameraForwardDistance + 0.05f; // Add a small buffer
-        
-        // Calculate safe position
-        Vector3 cameraPosition = previewCamera.transform.position;
-        Vector3 cameraForward = previewCamera.transform.forward;
-        
-        // First center the object horizontally and vertically
-        Vector3 newPosition = previewPlaceholder.transform.position - offset;
-        
-        // Then ensure it's at a safe distance from the camera along the camera's forward axis
-        float currentDistance = Vector3.Dot(newPosition - cameraPosition, cameraForward);
-        if (currentDistance < safeDistance)
-        {
-            // Move the object further away from the camera to avoid clipping
-            newPosition = newPosition + cameraForward * (safeDistance - currentDistance);
-            Debug.Log($"Adjusting model distance from camera to avoid clipping. New distance: {safeDistance}");
-        }
-        
-        modelInstance.transform.position = newPosition;
 
         // Create a render texture for the camera
         RenderTexture previewRenderTexture = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
