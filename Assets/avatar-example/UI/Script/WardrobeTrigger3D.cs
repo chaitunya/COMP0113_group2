@@ -11,7 +11,7 @@ public class WardrobeTrigger3D : MonoBehaviour
     public Camera mainCamera;         // Assign in Inspector (attached to avatar/player)
 
     [Header("Wardrobe Menu")]
-    public GameObject menuPanel;      // Assign in Inspector (wardrobe UI panel)
+    public GameObject wardrobePanel;      // Assign in Inspector (wardrobe UI panel)
 
     [Header("Camera Offset Settings")]
     public Vector3 positionOffset = new Vector3(0.15f, -0.05f, 1.8f); // Offset to position the camera behind avatar
@@ -39,7 +39,7 @@ public class WardrobeTrigger3D : MonoBehaviour
         avatarManager.OnAvatarCreated.AddListener(OnAvatarCreated);
 
         // Disable menu initially
-        if (menuPanel != null) menuPanel.SetActive(false);
+        if (wardrobePanel != null) wardrobePanel.SetActive(false);
 
         interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
         interactable.selectEntered.AddListener(Interactable_SelectEntered);
@@ -75,10 +75,16 @@ public class WardrobeTrigger3D : MonoBehaviour
         Debug.Log("Clicked on: " + gameObject.name);
 
         // Toggle wardrobe menu
-        if (menuPanel != null)
+        if (wardrobePanel != null)
         {
-            bool menuActive = !menuPanel.activeSelf; 
-            menuPanel.SetActive(menuActive);
+            bool menuActive = !wardrobePanel.activeSelf; 
+            var wardrobeUI = wardrobePanel.GetComponent<WardrobeUI>();
+            if (menuActive) {
+                wardrobeUI.OpenWardrobe();
+            } else {
+                wardrobeUI.CloseWardrobe();
+            }
+            // wardrobePanel.SetActive(menuActive);
             Debug.Log("Menu Status when Click: " + menuActive);
         }
     }
