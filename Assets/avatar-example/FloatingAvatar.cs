@@ -143,9 +143,14 @@ public class FloatingAvatar : MonoBehaviour
                 break;
 
             case BodyPart.Torso:
-                newMaterial = new Material(torsoBaseMaterial);
-                newMaterial.mainTexture = change.texture;
-                torsoRenderer.material = newMaterial;
+                // newMaterial = new Material(torsoBaseMaterial);
+                // newMaterial.mainTexture = change.texture;
+                // torsoRenderer.material = newMaterial;
+
+                MaterialPropertyBlock propBlock = new MaterialPropertyBlock();
+                torsoRenderer.GetPropertyBlock(propBlock);
+                propBlock.SetTexture("_MainTex", change.texture);
+                torsoRenderer.SetPropertyBlock(propBlock);
                 break;
 
             case BodyPart.LeftHand:
