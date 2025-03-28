@@ -1,16 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Ubiq.Avatars;
 using Ubiq.Messaging;
 using Ubiq.Rooms;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using Random = UnityEngine.Random;
-using System;
-using System.IO;
 
 
 public class ClothingScrollView : MonoBehaviour
@@ -254,7 +248,7 @@ public class ClothingScrollView : MonoBehaviour
         Image noneImage = noneItem.GetComponentInChildren<Image>();
         if (noneImage != null)
         {
-            // assign general prohibition sign to noneImage
+            // add general prohibition sign
         }
         if (noneImage.TryGetComponent<Button>(out var noneButton))
         {
@@ -310,7 +304,7 @@ public class ClothingScrollView : MonoBehaviour
         Image noneImage = noneHat.GetComponentInChildren<Image>();
         if (noneImage != null)
         {
-            // assign general prohibition sign to noneImage
+            // add general prohibition sign
         }
         if (noneImage.TryGetComponent<Button>(out var noneButton))
         {
@@ -357,12 +351,14 @@ public class ClothingScrollView : MonoBehaviour
         
         accessoryInstance.SetActive(true);
 
-        accessoryInstance.transform.localPosition = Vector3.zero;
-        accessoryInstance.transform.localRotation = Quaternion.identity;
+        accessoryInstance.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         accessoryInstance.transform.localScale = Vector3.one;
 
         yield return null;
         
+
+        // this section calculates bounds of the accessory and scales it to fit
+        // the preview
         Bounds bounds = CalculateRendererBounds(accessoryInstance);
         
         if (bounds.size == Vector3.zero)
@@ -371,21 +367,23 @@ public class ClothingScrollView : MonoBehaviour
             bounds.size = new Vector3(0.2f, 0.2f, 0.2f);
             bounds.center = accessoryInstance.transform.position;
         }
-        var distanceToCamera = Vector3.Distance(camera.transform.position, previewPlaceholder.transform.position);
-        var viewportHeight = 2.0f * distanceToCamera * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-
-
-        var viewportWidth = viewportHeight;
-        var largestDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+        var distanceToCamera = Vector3.Distance(camera.transform.position,
+            previewPlaceholder.transform.position);
+        var viewportHeight = 2.0f * distanceToCamera
+            * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        var largestDimension = Mathf.Max(bounds.size.x, bounds.size.y,
+                                         bounds.size.z);
         var marginFactor = 0.6f;
-        var scaleFactor = Mathf.Min(viewportWidth, viewportHeight) * marginFactor / largestDimension;
+        var scaleFactor = viewportHeight * marginFactor / largestDimension;
         accessoryInstance.transform.localScale = Vector3.one * scaleFactor;
         
         yield return null;
 
         bounds = CalculateRendererBounds(accessoryInstance);
         var offset = bounds.center - previewPlaceholder.transform.position;
-        var cameraForwardDistance = Vector3.Dot(bounds.size, camera.transform.forward) * 0.5f;
+        var cameraForwardDistance = Vector3.Dot(bounds.size,
+                                                camera.transform.forward)
+                                    * 0.5f;
 
         // safe distance for camera to view the item to avoid clipping
         var safeDistance = camera.nearClipPlane + cameraForwardDistance + 0.05f;
@@ -399,7 +397,7 @@ public class ClothingScrollView : MonoBehaviour
 
         if (currentDistance < safeDistance)
         {
-            newPosition = newPosition + cameraForward * (safeDistance - currentDistance);
+            newPosition += cameraForward * (safeDistance - currentDistance);
         }
         
         accessoryInstance.transform.position = newPosition;

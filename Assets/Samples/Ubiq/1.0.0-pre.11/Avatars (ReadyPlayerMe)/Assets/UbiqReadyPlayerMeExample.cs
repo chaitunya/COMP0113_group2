@@ -54,7 +54,7 @@ namespace Ubiq.ReadyPlayerMe
             
             if (!avatarManager)
             {
-                avatarManager = FindObjectOfType<AvatarManager>();
+                avatarManager = FindFirstObjectByType<AvatarManager>();
                 if (!avatarManager)
                 {
                     Debug.LogWarning("No NetworkScene could be found in this Unity scene. This script will be disabled.");
@@ -71,7 +71,7 @@ namespace Ubiq.ReadyPlayerMe
         {
             if (!loader)
             {
-                loader = FindObjectOfType<UbiqReadyPlayerMeLoader>();
+                loader = FindFirstObjectByType<UbiqReadyPlayerMeLoader>();
                 if (loader)
                 {
                     loader.completed.AddListener(Loader_Completed);
